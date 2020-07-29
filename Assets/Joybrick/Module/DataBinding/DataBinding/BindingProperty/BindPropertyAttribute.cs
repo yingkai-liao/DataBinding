@@ -5,7 +5,8 @@ using System;
 
 namespace Joybrick
 {
-    public class DataBindAttribute : PropertyAttribute
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+    public class DataBindAttribute : Attribute
     {
         public string name;
         public DataBindAttribute(string name)
@@ -14,6 +15,7 @@ namespace Joybrick
         }
     }
 
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Method)]
     public class DataContainerAttribute : Attribute
     {
         public string name;

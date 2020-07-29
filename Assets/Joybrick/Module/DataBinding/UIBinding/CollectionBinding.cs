@@ -10,8 +10,6 @@ using System.Linq;
 [AddComponentMenu("DataBinding/CollectionBinding")]
 public class CollectionBinding : DeepBindingBehavior
 {
-    protected static StringBuilder _sb = new StringBuilder();
-
     public BindingPathRoot prefab;
     List<BindingPathRoot> objList = new List<BindingPathRoot>();
 
@@ -38,8 +36,8 @@ public class CollectionBinding : DeepBindingBehavior
             var list = (IList)value;
             var result = new string[list.Count];
 
-            for (int i = 0; i < list.Count;  i++)
-                result[i] = _sb.Clear().Append("{").Append(pathRoot).Append(".").Append(i).Append("}").ToString();
+            for (int i = 0; i < list.Count; i++)
+                result[i] = $"{{{pathRoot}.{i}}}";
             
             UpdateList(result);
         }

@@ -17,9 +17,7 @@ namespace Joybrick
         Dictionary<string, DataBindPair> _cachedPath = new Dictionary<string, DataBindPair>();
 
         static char[] split = new char[] { '.' };
-
         object locker = new object();
-        public readonly static DataBindPair invalidData = new DataBindPair("invalid");
 
         public DataBindingManager()
         {
@@ -35,7 +33,7 @@ namespace Joybrick
             lock (locker)
             {
                 if (key.StartsWith(".") || key.EndsWith(".")) //非法請求
-                    return invalidData;
+                    return null;
 
                 string[] splitResult = key.Split(split);
                 int providerDeep = splitResult.Length - 1;
@@ -60,6 +58,11 @@ namespace Joybrick
                 dataBinding[collectionName] = newProvider;
             }
             return newProvider;
+        }
+
+        public IDisposable Subscribe(string path, Action<object> callback)
+        {
+            return GetDataPair(path)?.Subscribe(callback);
         }
 
         public void SetVarable(string path, object source)

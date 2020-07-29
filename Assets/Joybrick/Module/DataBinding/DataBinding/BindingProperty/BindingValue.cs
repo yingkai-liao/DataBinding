@@ -11,51 +11,50 @@ namespace Joybrick
     {
         object GetValue();
     }
+    
+    public class BindingValue<T> : ReactiveProperty<T>, IBindingProperty
+    {
+        public BindingValue() { }
+        public BindingValue(T value) { Value = value; }
+
+        public object GetValue() { return Value; }
+        public IDisposable Subscribe(IObserver<object> observer) { return ((ReactiveProperty<T>)this).Subscribe(x => observer.OnNext(x)); }
+        public ReactiveProperty<T> body { get { return ((ReactiveProperty<T>)this); } }
+    }
 
     [Serializable]
-    public class StringBindingValue : StringReactiveProperty, IBindingProperty
+    public class StringBindingValue : BindingValue<string>
     {
         public StringBindingValue() { }
         public StringBindingValue(string value) { Value = value; }
-
-        public object GetValue() { return Value; }
-        public IDisposable Subscribe(IObserver<object> observer) { return ((StringReactiveProperty)this).Subscribe(x => observer.OnNext(x)); }
     }
 
     [Serializable]
-    public class BoolBindingValue : BoolReactiveProperty, IBindingProperty
+    public class BoolBindingValue : BindingValue<bool>
     {
         public BoolBindingValue() { }
         public BoolBindingValue(bool value) { Value = value; }
-        public object GetValue() { return Value; }
-        public IDisposable Subscribe(IObserver<object> observer) { return ((BoolReactiveProperty)this).Subscribe(x => observer.OnNext(x)); }
     }
 
     [Serializable]
-    public class IntBindingValue : IntReactiveProperty, IBindingProperty
+    public class IntBindingValue : BindingValue<int>
     {
         public IntBindingValue() { }
         public IntBindingValue(int value) { Value = value; }
-        public object GetValue() { return Value; }
-        public IDisposable Subscribe(IObserver<object> observer) { return ((IntReactiveProperty)this).Subscribe(x => observer.OnNext(x)); }
     }
 
     [Serializable]
-    public class FloatBindingValue : FloatReactiveProperty, IBindingProperty
+    public class FloatBindingValue : BindingValue<float>
     {
         public FloatBindingValue() { }
         public FloatBindingValue(float value) { Value = value; }
-        public object GetValue() { return Value; }
-        public IDisposable Subscribe(IObserver<object> observer) { return ((FloatReactiveProperty)this).Subscribe(x => observer.OnNext(x)); }
     }
 
     [Serializable]
-    public class LongBindingValue : LongReactiveProperty, IBindingProperty
+    public class LongBindingValue : BindingValue<long>
     {
         public LongBindingValue() { }
         public LongBindingValue(long value) { Value = value; }
-        public object GetValue() { return Value; }
-        public IDisposable Subscribe(IObserver<object> observer) { return ((LongReactiveProperty)this).Subscribe(x => observer.OnNext(x)); }
     }
 
     [Serializable]
@@ -117,5 +116,7 @@ namespace Joybrick
         {
             return this;
         }
+
+        public ReactiveCollection<T> body { get { return ((ReactiveCollection<T>)this); } }
     }
 }

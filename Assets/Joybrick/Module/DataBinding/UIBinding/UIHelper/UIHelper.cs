@@ -4,6 +4,11 @@ using UnityEngine.UI;
 
 public class UIHelper
 {
+    static public void SetBindingValue(string path, string value)
+    {        
+        DataBindingManager.Instance.SetVarable(path, value);
+    }
+
     static public void UpdatePoolByPrefab<TPrefab>(TPrefab prefab, List<TPrefab> gameObjs, int dataCount, Transform parent = null) where TPrefab : UnityEngine.Component
     {
         if (parent == null)

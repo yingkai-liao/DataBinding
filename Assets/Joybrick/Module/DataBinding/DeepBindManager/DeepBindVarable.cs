@@ -16,18 +16,23 @@ namespace Joybrick
 
         public object GetValue()
         {
+            if (target == null)
+                return null;
             return target.GetValue();
         }
 
         public string GetValueString()
         {
+            if (target == null)
+                return "";
+
             var result = target.GetValue();
             return result != null ? result.ToString() : "";
         }
 
         public string DebugString()
         {
-            if (target == DataBindingManager.invalidData)
+            if (target == null)
                 return "<invalid>";
 
             var result = target.GetValue();
@@ -54,6 +59,7 @@ namespace Joybrick
         DataBindingManager bindingMgr;
         static StringBuilder _sbText = new StringBuilder();
         static StringBuilder _sbTemp = new StringBuilder();
+        static object locker = new object();
 
         public DeepBindVarable(string request, DataBindingManager bindingMgr)
         {
@@ -75,27 +81,29 @@ namespace Joybrick
         public void Update()
         {
             Dispose();
-
-            _sbText.Clear().Append(request);
-            int i = 0;
-            while (i < 100)
+            lock (locker)
             {
-                var parseResult = ParseOneVariable(_sbText);
-                if (parseResult == ParseResult.NewVariable)
+                _sbText.Clear().Append(request);
+                int i = 0;
+                while (i < 100)
                 {
-                    i++;
-                    continue;
+                    var parseResult = ParseOneVariable(_sbText);
+                    if (parseResult == ParseResult.NewVariable)
+                    {
+                        i++;
+                        continue;
+                    }
+
+                    if (parseResult == ParseResult.FinalVariable)
+                        result.SetValueAndForceNotify(process.Last().GetValue());
+                    else
+                        result.SetValueAndForceNotify(_sbText.ToString());
+
+                    this.parseResult = parseResult;
+                    return;
                 }
-
-                if (parseResult == ParseResult.FinalVariable)
-                    result.SetValueAndForceNotify(process.Last().GetValue());
-                else
-                    result.SetValueAndForceNotify(_sbText.ToString());
-
-                this.parseResult = parseResult;
-                return;
-            }
-            Debug.LogError("DynamicText resolve error: Too Many Level!");
+                Debug.LogError("DynamicText resolve error: Too Many Level!");
+            }            
         }
 
         ParseResult ParseOneVariable(StringBuilder text)

@@ -87,6 +87,7 @@ namespace Joybrick
 
             ProcessProperties(type, providerInstance);
             ProcessField(type, providerInstance);
+            ProcessMethod(type, providerInstance);
             UpdateUnbindData();
         }
 
@@ -144,7 +145,7 @@ namespace Joybrick
                     var providerName = ((DataContainerAttribute)providerSettings[0]).name;
                     GetCollect(providerName).SetDataSource(value);
                     GetBinding(providerName).SetSource(value);
-                    return;
+                    continue;
                 }
 
                 //是否掛bind
@@ -174,7 +175,7 @@ namespace Joybrick
                     var providerName = ((DataContainerAttribute)providerSettings[0]).name;
                     GetCollect(providerName).SetDataSource(value);
                     GetBinding(providerName).SetSource(value);
-                    return;
+                    continue;
                 }
 
                 //是否掛bind
@@ -189,6 +190,22 @@ namespace Joybrick
                 }
             }
         }
+
+        private void ProcessMethod(Type type, object providerInstance)
+        {
+            foreach (var m in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+            {
+                //是否掛provider
+                var providerSettings = m.GetCustomAttributes(typeof(DataContainerAttribute), false);
+                if (providerSettings.Length > 0)
+                {                    
+                    var providerName = ((DataContainerAttribute)providerSettings[0]).name;
+                    Func<string, object> function = m.CreateDelegate(typeof(Func<string, object>), providerInstance) as Func<string, object>;
+                    GetCollect(providerName).SetDataSource(function);
+                    return;
+                }
+            }
+        }
     }
 
     public class DynamicCollectionSource
@@ -196,6 +213,8 @@ namespace Joybrick
         IDictionary dictionarySource;
         IList listSource;
         IDynamicDataContainer dynamicDataSource;
+        Func<string, object> objectGetter;
+        Array array;
 
         public static DynamicCollectionSource AssignDynamicSource(object providerInstance)
         {
@@ -211,6 +230,14 @@ namespace Joybrick
             if (dictionarySource != null)
                 return new DynamicCollectionSource() { dictionarySource = dictionarySource };
 
+            var objectGetter = providerInstance as Func<string, object>;
+            if (objectGetter != null)
+                return new DynamicCollectionSource() { objectGetter = objectGetter };
+
+            var array = providerInstance as Array;
+            if(array != null)
+                return new DynamicCollectionSource() { array = array };
+
             return null;
         }
 
@@ -222,6 +249,11 @@ namespace Joybrick
                 return GetFromList(listSource, name);
             else if (dictionarySource != null)
                 return GetFromDictionary(dictionarySource, name);
+            else if (objectGetter != null)
+                return objectGetter(name);
+            else if (array != null)
+                return GetFromArray(array, name);
+
             return null;
         }
 
@@ -233,6 +265,11 @@ namespace Joybrick
                 return GetFromList(listSource, name);
             else if (dictionarySource != null)
                 return GetFromDictionary(dictionarySource, name);
+            else if (objectGetter != null)
+                return objectGetter(name);
+            else if (array != null)
+                return GetFromArray(array, name);
+
             return null;
         }
 
@@ -261,5 +298,15 @@ namespace Joybrick
             return null;
         }
 
+        private static object GetFromArray(Array arraySource, string name)
+        {
+            if (int.TryParse(name, out int index))
+            {
+                if (index >= arraySource.Length)
+                    return null;
+                return arraySource.GetValue(index);
+            }
+            return null;
+        }
     }
 }

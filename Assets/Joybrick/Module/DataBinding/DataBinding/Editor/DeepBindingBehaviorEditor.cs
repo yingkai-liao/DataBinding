@@ -10,6 +10,7 @@ namespace Joybrick
 
         public override void OnInspectorGUI()
         {
+            __target = (SetBindingVariable)target;
             base.OnInspectorGUI();
             if (GUILayout.Button("Select RequestText Set Target"))
             {

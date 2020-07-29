@@ -9,6 +9,7 @@ using System;
 public class TextBinding : DeepBindingBehavior
 {
     Text targetText;
+    
 
     public override void Start()
     {

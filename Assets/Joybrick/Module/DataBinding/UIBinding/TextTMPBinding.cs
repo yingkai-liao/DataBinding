@@ -3,17 +3,18 @@ using Cysharp.Threading.Tasks;
 using UnityEngine.UI;
 using UniRx;
 using System;
+using TMPro;
 
-[AddComponentMenu("DataBinding/TextBinding")]
-[RequireComponent(typeof(Text))]
-public class TextBinding : DeepBindingBehavior
+[AddComponentMenu("DataBinding/TextTMPBinding")]
+[RequireComponent(typeof(TextMeshProUGUI))]
+public class TextTMPBinding : DeepBindingBehavior
 {
-    Text targetText;
+    TextMeshProUGUI targetText;
     public string Format = "";
 
     public override void Start()
     {
-        targetText = GetComponent<Text>();
+        targetText = GetComponent<TextMeshProUGUI>();
         base.Start();
     }
 

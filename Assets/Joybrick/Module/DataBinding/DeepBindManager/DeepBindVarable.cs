@@ -44,9 +44,9 @@ namespace Joybrick
     {
         public enum ParseResult
         {
-            NewVariable, //找到新變數
+            TextAndVariable, //找到新變數
             NoMoreVariable, //沒有變數了 要求本身不只變數 回應必定為string
-            FinalVariable, //整個request最後要求是變數 按binding的type回應
+            IsVariable, //整個request最後要求是變數 按binding的type回應
         }
 
         string request;
@@ -81,25 +81,29 @@ namespace Joybrick
         public void Update()
         {
             Dispose();
+            parseResult = ParseResult.NoMoreVariable;
+
             lock (locker)
             {
                 _sbText.Clear().Append(request);
                 int i = 0;
                 while (i < 100)
                 {
-                    var parseResult = ParseOneVariable(_sbText);
-                    if (parseResult == ParseResult.NewVariable)
+                    var newResult = ParseOneVariable(_sbText);
+                    if (newResult == ParseResult.TextAndVariable || newResult == ParseResult.IsVariable)
                     {
                         i++;
+                        parseResult = newResult;
                         continue;
                     }
 
-                    if (parseResult == ParseResult.FinalVariable)
+                    if (parseResult == ParseResult.NoMoreVariable) //從一開始就是空的
+                        result.SetValueAndForceNotify(null);
+                    if (parseResult == ParseResult.IsVariable)
                         result.SetValueAndForceNotify(process.Last().GetValue());
                     else
                         result.SetValueAndForceNotify(_sbText.ToString());
-
-                    this.parseResult = parseResult;
+                    
                     return;
                 }
                 Debug.LogError("DynamicText resolve error: Too Many Level!");
@@ -130,8 +134,11 @@ namespace Joybrick
                     _sbTemp.Insert(0, '{');
                     _sbTemp.Append('}');
 
-                    ParseResult result = _sbTemp == text ? ParseResult.FinalVariable : ParseResult.NewVariable;
-                    text.Replace(_sbTemp.ToString(), newVariable.GetValueString());
+                    var replaceSource = _sbTemp.ToString();
+                    var fullText = text.ToString();
+
+                    ParseResult result = replaceSource == fullText ? ParseResult.IsVariable : ParseResult.TextAndVariable;
+                    text.Replace(replaceSource, newVariable.GetValueString());
                     newVariable.tmpResult = text.ToString();
                     return result;
                 }

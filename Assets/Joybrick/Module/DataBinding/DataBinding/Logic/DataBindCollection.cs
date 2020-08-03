@@ -82,13 +82,11 @@ namespace Joybrick
             if (providerInstance is IBindingProperty)
             {
                 bindingHandle = ((IBindingProperty)providerInstance).Subscribe(BindingContainerChange);
-                providerInstance = ((IBindingProperty)providerInstance).GetValue();
             }
-
-            ProcessProperties(type, providerInstance);
-            ProcessField(type, providerInstance);
-            ProcessMethod(type, providerInstance);
-            UpdateUnbindData();
+            else
+            {
+                BindingContainerChange(providerInstance);
+            }
         }
 
         private void UpdateUnbindData()
@@ -125,10 +123,14 @@ namespace Joybrick
                 data.Value.SetSource(null);
             }
 
-            var type = providerInstance.GetType();
-            ProcessProperties(type, providerInstance);
-            ProcessField(type, providerInstance);
-            UpdateUnbindData();
+            if (providerInstance != null)
+            {
+                var type = providerInstance.GetType();
+                ProcessProperties(type, providerInstance);
+                ProcessField(type, providerInstance);
+                ProcessMethod(type, providerInstance);
+                UpdateUnbindData();
+            }
         }
 
         private void ProcessProperties(Type type, object providerInstance)
@@ -291,7 +293,7 @@ namespace Joybrick
         {
             if (int.TryParse(name, out int index))
             {
-                if (index >= listSource.Count)
+                if (index >= listSource.Count || index < 0)
                     return null;
                 return listSource[index];
             }

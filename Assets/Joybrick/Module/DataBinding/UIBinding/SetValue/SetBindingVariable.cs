@@ -33,7 +33,8 @@ public class SetBindingVariable : BindingBehaviorBase
         
         if (!string.IsNullOrEmpty(SetValue))
         {
-            var valueResult = DeepBindManager.Instance.GetRequestResult(SetValue);
+            var trueSetVale = SetValue.Replace("$", basePath != null ? basePath.requestText : "");
+            var valueResult = DeepBindManager.Instance.GetRequestResult(trueSetVale);
             var data = DataBindingManager.Instance.GetDataPair(deepResult);
             if (data != null)
             {

@@ -10,7 +10,7 @@ public abstract class DeepBindingBehavior : BindingBehaviorBase, IDisposable
     public DeepBindVarable deepBinder;
     protected IDisposable handle;
 
-    public bool IsVariable { get { return deepBinder.parseResult == DeepBindVarable.ParseResult.FinalVariable; } }
+    public bool IsVariable { get { return deepBinder.parseResult == DeepBindVarable.ParseResult.IsVariable; } }
 
     bool disableDetect = false;
     abstract public void onChange(object value);

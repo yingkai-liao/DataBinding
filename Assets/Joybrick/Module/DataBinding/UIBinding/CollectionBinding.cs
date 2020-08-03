@@ -37,7 +37,7 @@ public class CollectionBinding : DeepBindingBehavior
             var result = new string[list.Count];
 
             for (int i = 0; i < list.Count; i++)
-                result[i] = $"{{{pathRoot}.{i}}}";
+                result[i] = $"{pathRoot}.{i}";
             
             UpdateList(result);
         }

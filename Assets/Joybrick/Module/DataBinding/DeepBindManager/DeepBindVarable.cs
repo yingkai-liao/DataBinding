@@ -120,7 +120,7 @@ namespace Joybrick
         }
 
         ParseResult ParseOneVariable(StringBuilder text)
-        {
+        {            
             //找到一個{變數}並parse它
             bool append = false;
             int count = text.Length;
@@ -135,9 +135,11 @@ namespace Joybrick
                 else if (ch == '}' && append)
                 {
                     DeepBindMember newVariable = new DeepBindMember();
-                    newVariable.request = _sbTemp.ToString();
+                    newVariable.request = _sbTemp.ToString();                    
                     newVariable.target = bindingMgr.GetValue(newVariable.request);
-                    newVariable.handle = newVariable.target.Subscribe(OnChange);
+                    if(newVariable.target != null)
+                        newVariable.handle = newVariable.target.Subscribe(OnChange);
+
                     process.Add(newVariable);
 
                     _sbTemp.Insert(0, '{');

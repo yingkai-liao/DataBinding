@@ -65,14 +65,15 @@ public class Sample : MonoBehaviour
 
     private void Awake()
     {
-        DataBindingManager dataBindingManager = new DataBindingManager();
+        DataBindingManager dataBindingManager = DataBindingManager.Instance;
         DeepBindManager deepBindManager = new DeepBindManager(dataBindingManager);
 
         dataBindingManager.SetSource("DataSet", s1);
         dataBindingManager.SetSource("ListData", dynamic);
-        dataBindingManager.GetValue("UISample.ToS1").Subscribe(ToS1);
-        dataBindingManager.GetValue("UISample.ToS2").Subscribe(ToS2);
-        dataBindingManager.GetValue("UISample.Random").Subscribe(RandS);
+
+        dataBindingManager.Subscribe("UISample.ToS1", ToS1); ;
+        dataBindingManager.Subscribe("UISample.ToS2", ToS2);
+        dataBindingManager.Subscribe("UISample.Random", RandS);
 
         Dictionary<string, object> JsonData = new Dictionary<string, object>();
         JsonData["Name"] = "TestData";

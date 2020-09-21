@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b090f157aead18c49acf51484044725b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: UISample.ToS2
   SetValue: 
   SetGameObjectValue: {fileID: 0}
@@ -272,7 +272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b090f157aead18c49acf51484044725b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: UISample.LastButton
   SetValue: 
   SetGameObjectValue: {fileID: 86487755}
@@ -289,7 +289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b090f157aead18c49acf51484044725b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: UISample.Image
   SetValue: image2
   SetGameObjectValue: {fileID: 0}
@@ -410,8 +410,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507eaf1e5c7104d41b74f0135af31f1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: Index = {ListData.{DataSet.IntValue}}
+  Format: 
 --- !u!114 &372009535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -816,7 +817,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14dfe2f215c17a7459d55af2359aabf3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: UISample.Outline
   SetValue: 
   SetGameObjectValue: {fileID: 0}
@@ -952,8 +953,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507eaf1e5c7104d41b74f0135af31f1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 1148864449}
+  variables: {fileID: 0}
   requestText: $
+  Format: 
 --- !u!114 &1148864449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -966,7 +968,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b323727be72a784daa53a75b7ebdf1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requestText: DataSet.Int2String.0
+  variable: []
 --- !u!222 &1148864450
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1029,7 +1031,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b090f157aead18c49acf51484044725b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: UISample.ToS1
   SetValue: 
   SetGameObjectValue: {fileID: 0}
@@ -1126,7 +1128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b090f157aead18c49acf51484044725b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: UISample.LastButton
   SetValue: 
   SetGameObjectValue: {fileID: 1167249878}
@@ -1143,7 +1145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b090f157aead18c49acf51484044725b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: UISample.Image
   SetValue: image1
   SetGameObjectValue: {fileID: 0}
@@ -1428,7 +1430,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b22c75feca3e6048bdd273205b16ce3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: '{UISample.Image}'
 --- !u!114 &1652087727
 MonoBehaviour:
@@ -1517,9 +1519,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe119c91ae28fad4d96248913df9ff20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
-  requestText: '{DataSet.Int2String}'
-  prefab: {fileID: 1148864449}
 --- !u!114 &1822514723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1595,8 +1594,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507eaf1e5c7104d41b74f0135af31f1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: Result =  {DataSet.Int2String.{DataSet.IntValue}}
+  Format: 
 --- !u!114 &1824726314
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1916,7 +1916,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aafc661dbf0fc024a912a2ba2673aaa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: '{UISample.LastButton.position}'
 --- !u!114 &2048289100
 MonoBehaviour:
@@ -1930,7 +1930,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a502d1aee15f67f4ea59cd768e92e7b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: '{UISample.Outline.IsOn}'
   CheckType: 0
   CheckString: 
@@ -2025,7 +2025,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b090f157aead18c49acf51484044725b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: UISample.Random
   SetValue: 
   SetGameObjectValue: {fileID: 0}
@@ -2122,7 +2122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b090f157aead18c49acf51484044725b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basePath: {fileID: 0}
+  variables: {fileID: 0}
   requestText: UISample.LastButton
   SetValue: 
   SetGameObjectValue: {fileID: 2105286195}

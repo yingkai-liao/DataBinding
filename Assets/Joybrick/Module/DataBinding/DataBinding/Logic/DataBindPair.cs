@@ -24,8 +24,7 @@ namespace Joybrick
         }
 
         public IDisposable Subscribe(IObserver<object> observer)
-        {
-            
+        {            
             var handle = onChange.Subscribe(observer);
             return handle;
         }

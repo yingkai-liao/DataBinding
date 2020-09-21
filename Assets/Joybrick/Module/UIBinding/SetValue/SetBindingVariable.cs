@@ -14,7 +14,7 @@ public class SetBindingVariable : BindingBehaviorBase
 
     public virtual string DoSetBindingValue()
     {
-        ReBuildTrueRequestPath();
+        ReBuildTrueRequestPath(false);
         if (!isRequestValid)
         {
             Debug.Log("request path not valid!", this);

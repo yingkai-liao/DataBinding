@@ -35,7 +35,7 @@ public abstract class BindingBehaviorBase : MonoBehaviour
             ReBuildTrueRequestPath();
     }
 
-    public virtual void ReBuildTrueRequestPath()
+    public virtual void ReBuildTrueRequestPath(bool doRequestAfter = true)
     {        
         if (string.IsNullOrEmpty(requestText))
         {
@@ -70,7 +70,8 @@ public abstract class BindingBehaviorBase : MonoBehaviour
 
 
         isRequestValid = true;
-        OnRequest();
+        if(doRequestAfter)
+            OnRequest();
     }
 
     public abstract void OnInvalidResult();

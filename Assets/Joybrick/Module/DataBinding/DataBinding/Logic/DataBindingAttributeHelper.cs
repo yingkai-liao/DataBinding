@@ -76,7 +76,7 @@ namespace Joybrick
 
         private void ProcessProperties(Type type)
         {
-            foreach (var p in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var p in type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
                 //是否掛bind
                 var bindSettings = p.GetCustomAttributes(typeof(DataBindAttribute), false);
@@ -90,7 +90,7 @@ namespace Joybrick
 
         private void ProcessField(Type type)
         {
-            foreach (var f in type.GetFields(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var f in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
                 //是否掛bind
                 var bindSettings = f.GetCustomAttributes(typeof(DataBindAttribute), false);
@@ -104,7 +104,7 @@ namespace Joybrick
 
         private void ProcessMethod(Type type)
         {
-            foreach (var m in type.GetMethods(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var m in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
                 //是否掛provider
                 var bindSettings = m.GetCustomAttributes(typeof(DataBindAttribute), false);

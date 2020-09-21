@@ -9,6 +9,8 @@ namespace Joybrick
 {
     public static class UIHelper
     {
+        public static IAssetLoader assetLoader;
+
         static public void SetBindingValue(string path, string value)
         {
             DataBindingManager.Instance.SetSource(path, value);
@@ -18,16 +20,12 @@ namespace Joybrick
         {
             image.enabled = false;
 
-            if(!path.EndsWith(".png"))
+            if (!path.EndsWith(".png"))
                 path = $"{path}.png";
-
-            var service = GameMain.Services;
-            var assetLoader = service.assetLoader;
 
             if (assetLoader == null)
             {
-                await UniTask.WaitUntil(() => service.assetLoader != null);
-                assetLoader = GameMain.Services.assetLoader;
+                await UniTask.WaitUntil(() => assetLoader != null);
             }
 
             var sprite = await assetLoader.LoadAsync<Sprite>(path);

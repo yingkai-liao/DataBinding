@@ -12,11 +12,9 @@ namespace Joybrick
 
         static Texture2D[] s_TestIcons =
         {
-            EditorGUIUtility.FindTexture ( "sv_icon_dot4_pix16_gizmo"), //非監聽 有資料的DataPair
-            EditorGUIUtility.FindTexture ( "sv_icon_dot0_pix16_gizmo"), //無資料DataPair
-            EditorGUIUtility.FindTexture ("sv_icon_dot4_pix16_gizmo"), //非監聽型路徑
-            EditorGUIUtility.FindTexture ("sv_icon_dot0_pix16_gizmo"), //未連接路徑
-            EditorGUIUtility.FindTexture ( "sv_icon_dot3_pix16_gizmo"), //監聽
+            EditorGUIUtility.FindTexture ( "sv_icon_dot4_pix16_gizmo"), //非監聽 有資料的DataPair 黃燈
+            EditorGUIUtility.FindTexture ( "sv_icon_dot0_pix16_gizmo"), //無資料DataPair 灰燈
+            EditorGUIUtility.FindTexture ( "sv_icon_dot3_pix16_gizmo"), //監聽 有資料
             EditorGUIUtility.FindTexture ( "Clipboard"), //copy
         };
 
@@ -53,7 +51,7 @@ namespace Joybrick
 
             if (DataBindingView.OnCopy != null)
             {
-                if (GUI.Button(cellRect, s_TestIcons[5]))
+                if (GUI.Button(cellRect, s_TestIcons[3]))
                 {
                     DataBindingView.OnCopy(item.data.name);
                     DataBindingView.OnCopy = null;
@@ -68,25 +66,15 @@ namespace Joybrick
             cellRect = args.GetCellRect(2);
             CenterRectUsingSingleLineHeight(ref cellRect);
             //CenterRectUsingSingleLineHeight(ref cellRect);
-            if (item.data.IsData)
-            {
-                if (!item.data.hasSource)
-                    GUI.DrawTexture(cellRect, s_TestIcons[1], ScaleMode.ScaleToFit);
-                else if (item.data.dp.IsBindingValue)
-                    GUI.DrawTexture(cellRect, s_TestIcons[4], ScaleMode.ScaleToFit);
-                else
-                    GUI.DrawTexture(cellRect, s_TestIcons[0], ScaleMode.ScaleToFit);
-                GUI.DrawTexture(args.GetCellRect(3), item.data.hasObserver ? s_TestIcons[4] : s_TestIcons[1], ScaleMode.ScaleToFit);
-            }
+
+            if (!item.data.hasSource)
+                GUI.DrawTexture(cellRect, s_TestIcons[1], ScaleMode.ScaleToFit);
+            else if (item.data.dataPair.IsBindingProperty)
+                GUI.DrawTexture(cellRect, s_TestIcons[2], ScaleMode.ScaleToFit);
             else
-            {
-                if (!item.data.hasSource)
-                    GUI.DrawTexture(cellRect, s_TestIcons[3], ScaleMode.ScaleToFit);
-                else if (item.data.dc.IsBindingDataSource)
-                    GUI.DrawTexture(cellRect, s_TestIcons[4], ScaleMode.ScaleToFit);
-                else
-                    GUI.DrawTexture(cellRect, s_TestIcons[2], ScaleMode.ScaleToFit);
-            }
+                GUI.DrawTexture(cellRect, s_TestIcons[0], ScaleMode.ScaleToFit);
+            GUI.DrawTexture(args.GetCellRect(3), item.data.hasObserver ? s_TestIcons[2] : s_TestIcons[1], ScaleMode.ScaleToFit);
+            GUI.Label(args.GetCellRect(4), item.data.type);
         }
 
         protected override bool CanMultiSelect(TreeViewItem item)
@@ -111,7 +99,7 @@ namespace Joybrick
                 },
                 new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Data", "資料來源"),
+                    headerContent = new GUIContent("Data"),
                     headerTextAlignment = TextAlignment.Left,
                     sortedAscending = true,
                     sortingArrowAlignment = TextAlignment.Left,
@@ -141,7 +129,18 @@ namespace Joybrick
                     minWidth = 16,
                     autoResize = false,
                     allowToggleVisibility = false
-                }
+                },
+                new MultiColumnHeaderState.Column
+                {
+                    headerContent = new GUIContent("Type"),
+                    headerTextAlignment = TextAlignment.Left,
+                    sortedAscending = true,
+                    sortingArrowAlignment = TextAlignment.Left,
+                    width = 200,
+                    minWidth = 60,
+                    autoResize = false,
+                    allowToggleVisibility = false
+                },
             };
 
             var state = new MultiColumnHeaderState(columns);

@@ -20,6 +20,6 @@ public class OnToggleChangeBinding : SetBindingVariable
     {
         //request路徑發生變更
         var path = DoSetBindingValue();
-        DataBindingManager.Instance.SetVarable(path + ".IsOn", toggle.isOn);
+        DataBindingManager.Instance.SetSource(path + ".IsOn", toggle.isOn);
     }
 }

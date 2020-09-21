@@ -12,67 +12,68 @@ namespace Joybrick
         object GetValue();
     }
     
-    public class BindingValue<T> : ReactiveProperty<T>, IBindingProperty
+    public class BindingProperty<T> : ReactiveProperty<T>, IBindingProperty
     {
-        public BindingValue() { }
-        public BindingValue(T value) { Value = value; }
+        public BindingProperty() { }
+        public BindingProperty(T value) { Value = value; }
 
         public object GetValue() { return Value; }
         public IDisposable Subscribe(IObserver<object> observer) { return ((ReactiveProperty<T>)this).Subscribe(x => observer.OnNext(x)); }
+        public IDisposable Subscribe(Action<T> callback) { return ((ReactiveProperty<T>)this).Subscribe(x => callback(x)); }
         public ReactiveProperty<T> body { get { return ((ReactiveProperty<T>)this); } }
     }
 
     [Serializable]
-    public class StringBindingValue : BindingValue<string>
+    public class StringProperty : BindingProperty<string>
     {
-        public StringBindingValue() { }
-        public StringBindingValue(string value) { Value = value; }
+        public StringProperty() { }
+        public StringProperty(string value) { Value = value; }
     }
 
     [Serializable]
-    public class BoolBindingValue : BindingValue<bool>
+    public class BoolProperty : BindingProperty<bool>
     {
-        public BoolBindingValue() { }
-        public BoolBindingValue(bool value) { Value = value; }
+        public BoolProperty() { }
+        public BoolProperty(bool value) { Value = value; }
     }
 
     [Serializable]
-    public class IntBindingValue : BindingValue<int>
+    public class IntProperty : BindingProperty<int>
     {
-        public IntBindingValue() { }
-        public IntBindingValue(int value) { Value = value; }
+        public IntProperty() { }
+        public IntProperty(int value) { Value = value; }
     }
 
     [Serializable]
-    public class FloatBindingValue : BindingValue<float>
+    public class FloatProperty : BindingProperty<float>
     {
-        public FloatBindingValue() { }
-        public FloatBindingValue(float value) { Value = value; }
+        public FloatProperty() { }
+        public FloatProperty(float value) { Value = value; }
     }
 
     [Serializable]
-    public class LongBindingValue : BindingValue<long>
+    public class LongProperty : BindingProperty<long>
     {
-        public LongBindingValue() { }
-        public LongBindingValue(long value) { Value = value; }
+        public LongProperty() { }
+        public LongProperty(long value) { Value = value; }
     }
 
     [Serializable]
-    public class ListBindingValue<T> : ReactiveCollection<T>, IDynamicDataContainer, IBindingProperty
+    public class ListProperty<T> : ReactiveCollection<T>, IDynamicDataSource, IBindingProperty
     {
-        Subject<ListBindingValue<T>> subject = new Subject<ListBindingValue<T>>();
+        Subject<ListProperty<T>> subject = new Subject<ListProperty<T>>();
 
-        public ListBindingValue(IEnumerable<T> collection) : base(collection)
+        public ListProperty(IEnumerable<T> collection) : base(collection)
         {
             init();
         }
 
-        public ListBindingValue(List<T> list) : base(list)
+        public ListProperty(List<T> list) : base(list)
         {
             init();
         }
 
-        public ListBindingValue()
+        public ListProperty()
         {
             init();
         }
@@ -83,23 +84,6 @@ namespace Joybrick
             ObserveRemove().Subscribe(x => onChange());
             ObserveMove().Subscribe(x => onChange());
             ObserveAdd().Subscribe(x => onChange());
-        }
-
-
-        public object GetBinding(string key)
-        {
-            int index = int.Parse(key);
-            if (this.Count <= index)
-                return null;
-            return this[index];
-        }
-
-        public object GetDataContainer(string key)
-        {
-            int index = int.Parse(key);
-            if (this.Count <= index)
-                return null;
-            return this[index];
         }
 
         void onChange()
@@ -117,6 +101,87 @@ namespace Joybrick
             return this;
         }
 
-        public ReactiveCollection<T> body { get { return ((ReactiveCollection<T>)this); } }
+        public object GetValue(string key)
+        {
+            int index = int.Parse(key);
+            if (this.Count <= index)
+                return null;
+            return this[index];
+        }
+    }
+
+    [Serializable]
+    public class DictionaryProperty<TKey,TValue> : ReactiveDictionary<TKey, TValue>, IDynamicDataSource, IBindingProperty
+    {
+        Subject<DictionaryProperty<TKey, TValue>> subject = new Subject<DictionaryProperty<TKey, TValue>>();
+
+        public DictionaryProperty(IEqualityComparer<TKey> equalityComparer) : base(equalityComparer)
+        {
+            init();
+        }
+
+        public DictionaryProperty(Dictionary<TKey, TValue> data) : base(data)
+        {
+            init();
+        }
+
+        public DictionaryProperty()
+        {
+            init();
+        }
+
+        void init()
+        {
+            ObserveReset().Subscribe(x => onChange());            
+            ObserveReplace().Subscribe(x => onChange());
+            ObserveRemove().Subscribe(x => onChange());
+            ObserveAdd().Subscribe(x => onChange());
+        }
+
+        public object GetValue()
+        {
+            return this;
+        }
+
+        public object GetValue(string key)
+        {
+            TKey convKey = (TKey)GetKey(key);
+            if (this.TryGetValue(convKey, out var value))
+                return value;
+            return null;
+        }
+
+        void onChange()
+        {
+            subject.OnNext(this);
+        }
+
+        public IDisposable Subscribe(IObserver<object> observer)
+        {
+            return subject.Subscribe(observer);
+        }
+
+        private object GetKey(string key)
+        {
+            var type = typeof(TKey);
+
+            if (type == typeof(string))
+                return key;
+            else if (type == typeof(int))
+                return int.Parse(key);
+            else if (type == typeof(float))
+                return float.Parse(key);
+            else if(type == typeof(long))
+                return long.Parse(key);
+            else
+            {
+                foreach (var k in Keys)
+                {
+                    if (k.ToString() == key)
+                        return k;
+                }
+            }
+            return null;
+        }
     }
 }

@@ -8,11 +8,11 @@ using Cysharp.Threading.Tasks;
 public class PropertySource1
 {
     [DataBind("IntValue")]
-    IntBindingValue IntBindingValue = new IntBindingValue(0);
+    IntProperty IntBindingValue = new IntProperty(0);
     [DataBind("AnotherValue")]
-    StringBindingValue AnotherValue = new StringBindingValue("testValue");
+    StringProperty AnotherValue = new StringProperty("testValue");
 
-    [DataContainer("Int2String")]
+    [DataBind("Int2String")]
     List<string> ListBinding = new List<string>() {
         "剪刀","石頭","布"
     };
@@ -28,9 +28,9 @@ public class PropertySource1
 public class PropertySource2
 {
     [DataBind("IntValue")]
-    IntBindingValue IntBindingValue = new IntBindingValue(0);
+    IntProperty IntBindingValue = new IntProperty(0);
 
-    [DataContainer("Int2String")]
+    [DataBind("Int2String")]
     List<string> ListBinding = new List<string>() {
         "棒","老虎","雞","蟲"
     };
@@ -43,20 +43,15 @@ public class PropertySource2
     }
 }
 
-public class DynamicSource : IDynamicDataContainer
+public class DynamicSource : IDynamicDataSource
 {
-    ListBindingValue<StringBindingValue> randomString = new ListBindingValue<StringBindingValue>();
+    ListProperty<StringProperty> randomString = new ListProperty<StringProperty>();
     List<string> data = new List<string>() { "1", "2", "3", "4", "5" };
 
-    public object GetBinding(string key)
+    public object GetValue(string key)
     {
         if (int.TryParse(key, out int index) && index < data.Count)
             return data[index];
-        return null;
-    }
-
-    public object GetDataContainer(string key)
-    {
         return null;
     }
 }
@@ -73,11 +68,11 @@ public class Sample : MonoBehaviour
         DataBindingManager dataBindingManager = new DataBindingManager();
         DeepBindManager deepBindManager = new DeepBindManager(dataBindingManager);
 
-        dataBindingManager.SetDataContainer("DataSet", s1);
-        dataBindingManager.SetDataContainer("ListData", dynamic);
-        dataBindingManager.GetDataPair("UISample.ToS1").Subscribe(ToS1);
-        dataBindingManager.GetDataPair("UISample.ToS2").Subscribe(ToS2);
-        dataBindingManager.GetDataPair("UISample.Random").Subscribe(RandS);
+        dataBindingManager.SetSource("DataSet", s1);
+        dataBindingManager.SetSource("ListData", dynamic);
+        dataBindingManager.GetValue("UISample.ToS1").Subscribe(ToS1);
+        dataBindingManager.GetValue("UISample.ToS2").Subscribe(ToS2);
+        dataBindingManager.GetValue("UISample.Random").Subscribe(RandS);
 
         Dictionary<string, object> JsonData = new Dictionary<string, object>();
         JsonData["Name"] = "TestData";
@@ -86,17 +81,17 @@ public class Sample : MonoBehaviour
         data["Age"] = 16;
         data["ATK"] = 80;
         data["Love"] = "Lucy";
-        DataBindingManager.Instance.SetDataContainer("Json", JsonData);
+        DataBindingManager.Instance.SetSource("Json", JsonData);
     }
     
     void ToS1(object newValue)
     {
-        DataBindingManager.Instance.SetDataContainer("DataSet", s1);
+        DataBindingManager.Instance.SetSource("DataSet", s1);
     }
 
     void ToS2(object newValue)
     {
-        DataBindingManager.Instance.SetDataContainer("DataSet", s2);
+        DataBindingManager.Instance.SetSource("DataSet", s2);
     }
 
     void RandS(object newValue)

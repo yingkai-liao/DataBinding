@@ -10,43 +10,18 @@ namespace Joybrick
         {
             get
             {
-                if (dp != null)
-                {
-                    return !dp.HasSource ? "" : dp.GetValue() == null ? "" : dp.GetValue().ToString();
-                }
-                if(dc != null)
-                    return dc.dataSource == null ? "<null>" : dc.dataSource.ToString();
-                return null;
+                var data = dataPair.GetValue();
+                if (data == null) return "";
+                return data.ToString();
             }
         }
 
-        public bool hasSource
-        {
-            get
-            {
-                if (dp != null)
-                    return dp.HasSource;
-                if (dc != null)
-                    return dc.isConnected;
-                return false;
-            }
-        }
+        public bool hasSource { get { return dataPair.HasSource; } }
+        public bool hasObserver { get { return dataPair.HasObservers; } }
+        public bool isBindingProperty { get { return dataPair.IsBindingProperty; } }
+        public string type { get { return dataPair.source.GetTypeName(); } }
 
-        public bool hasObserver
-        {
-            get
-            {
-                if (dp != null)
-                    return dp.HasObservers();
-                return false;
-            }
-        }
-
-
-        public bool IsData { get { return dp != null; } }
-
-        public DataBindPair dp;
-        public DataBindCollection dc;
+        public DataBindPair dataPair;
 
         public BindingTreeElement(string name)
         {
@@ -56,13 +31,7 @@ namespace Joybrick
         public BindingTreeElement(string name, DataBindPair data) : base()
         {
             base.name = name;
-            dp = data;
-        }
-
-        public BindingTreeElement(string name, DataBindCollection data) : base()
-        {
-            base.name = name;
-            dc = data;
+            this.dataPair = data;
         }
     }
 }

@@ -6,8 +6,7 @@ using System;
 
 public abstract class BindingBehaviorBase : MonoBehaviour
 {
-    [Tooltip("requestText中的 \"{$}\" 會被替換成rootPath上寫的路徑")]
-    public BindingPathRoot basePath;
+    public DataBindVariable variables;
     public string requestText = "";    
     [NonSerialized]
     public string trueRequestText;
@@ -15,8 +14,8 @@ public abstract class BindingBehaviorBase : MonoBehaviour
 
     public virtual void Start()
     {
-        if (basePath != null)
-            basePath.Register(this);
+        if (variables != null)
+            variables.Register(this);
         else
         {
             trueRequestText = requestText;
@@ -24,38 +23,51 @@ public abstract class BindingBehaviorBase : MonoBehaviour
         }
     }
 
-    public void OnRootPathUpdate()
+    public void SetRequest(string request)
+    {
+        this.requestText = request;
+        ReBuildTrueRequestPath();
+    }
+
+    public void OnVariableUpdate()
     {
         if (isActiveAndEnabled)
             ReBuildTrueRequestPath();
     }
 
     public virtual void ReBuildTrueRequestPath()
-    {
-        bool needRootPath = requestText.Contains("$");
-        if (needRootPath)
-        {
-            if (basePath == null || string.IsNullOrEmpty(basePath.requestText))
-            {
-                isRequestValid = false;
-                Debug.LogError("rootPath is empty!", this);
-                OnInvalidResult();
-                return;
-            }
-            trueRequestText = requestText.Replace("$", basePath.requestText);
-        }
-        else
-        {
-            trueRequestText = requestText;
-        }
-
-        if(string.IsNullOrEmpty(trueRequestText))
+    {        
+        if (string.IsNullOrEmpty(requestText))
         {
             isRequestValid = false;
-            Debug.LogError("request is empty!", this);            
             OnInvalidResult();
             return;
         }
+
+        trueRequestText = requestText;
+        if (variables != null)
+        {
+            foreach(var item in variables.variable)
+            {
+                trueRequestText = trueRequestText.Replace($"{{$.{item.name}}}", item.value);
+            }
+        }
+
+        if (trueRequestText.Contains("$"))
+        {
+            isRequestValid = false;
+            OnInvalidResult();
+            Debug.Log("variable not prepared!");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(trueRequestText))
+        {
+            isRequestValid = false;
+            OnInvalidResult();
+            return;
+        }
+
 
         isRequestValid = true;
         OnRequest();

@@ -28,14 +28,22 @@ public class SetBindingVariable : BindingBehaviorBase
         if (SetGameObjectValue != null)
         {
             UIEvent eventData = new UIEvent(SetValue, SetGameObjectValue);
-            DataBindingManager.Instance.SetDataContainer(deepResult, eventData);
+            DataBindingManager.Instance.SetSource(deepResult, eventData);
         }
         
         if (!string.IsNullOrEmpty(SetValue))
         {
-            var trueSetVale = SetValue.Replace("$", basePath != null ? basePath.requestText : "");
+            var trueSetVale = SetValue;
+            if (variables != null)
+            {
+                foreach (var item in variables.variable)
+                {
+                    trueSetVale = trueSetVale.Replace($"{{$.{item.name}}}", item.value);
+                }
+            }
+
             var valueResult = DeepBindManager.Instance.GetRequestResult(trueSetVale);
-            var data = DataBindingManager.Instance.GetDataPair(deepResult);
+            var data = DataBindingManager.Instance.GetValue(deepResult);
             if (data != null)
             {
                 data.SetSource(valueResult);

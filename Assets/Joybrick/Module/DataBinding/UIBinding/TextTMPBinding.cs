@@ -20,6 +20,9 @@ public class TextTMPBinding : DeepBindingBehavior
 
     public override async void onChange(object result)
     {
+        if(targetText == null)
+            targetText = GetComponent<TextMeshProUGUI>();
+
         await UniTask.SwitchToMainThread();
         if (result != null)
         {

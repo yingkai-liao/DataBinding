@@ -87,11 +87,11 @@ namespace Joybrick
                     return;
 
                 var bindMgr = DataBindingManager.Instance;
-                var keys = new List<string>(bindMgr.dataBinding.Keys);
+                var keys = new List<string>(bindMgr.root.children.Keys);
                 keys.Sort();                
                 foreach (var key in keys)
                 {
-                    var provider = bindMgr.dataBinding[key];
+                    var provider = bindMgr.root.children[key];
                     UpdateProvider(key, provider, 0);
                 }
             }                   
@@ -117,30 +117,18 @@ namespace Joybrick
             }
         }
 
-        private void UpdateProvider(string name, DataBindCollection value, int layer, string baseName = "")
+        private void UpdateProvider(string name, DataBindPair value, int layer)
         {
             var me = new BindingTreeElement(name, value) { depth = layer, id = datas.Count };
             datas.Add(me);
-            string myBase = name + ".";
 
-            var keys = new List<string>(value.providers.Keys).ConvertAll<string[]>(x => new string[] { x, "0" });
-            keys.AddRange(new List<string>(value.dataPairs.Keys).ConvertAll<string[]>(x => new string[] { x, "1" }));
-            keys.Sort((x,y)=> {
-                var result = string.Compare(x[0] , y[0]);
-                return result != 0 ? result : string.Compare(x[1], y[1]);
-            });
+            var keys = new List<string>(value.children.Keys);
+            keys.Sort();
+            
             foreach (var key in keys)
             {
-                if (key[1] == "0")
-                {
-                    var provider = value.providers[key[0]];
-                    UpdateProvider(myBase + key[0], provider, layer + 1, myBase);
-                }
-                else
-                {
-                    var data = value.dataPairs[key[0]];
-                    datas.Add(new BindingTreeElement(myBase + key[0], data) { depth = layer + 1, id = datas.Count });
-                }
+                var data = value.children[key];
+                UpdateProvider($"{name}.{key}" , data, layer + 1);
             }
         }
 

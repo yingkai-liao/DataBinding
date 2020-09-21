@@ -1,67 +1,111 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using System;
-using System.Text;
 using UniRx;
-using System.Linq;
+using System.Reflection;
+using Cysharp.Threading.Tasks;
 
 namespace Joybrick
 {
-    public class DataBindPair : IObservable<object>
+    public class DataBindPair : IDisposable, IObservable<object>
     {
-        public string key { get; private set; }
-        IBindingProperty sourceBindingProperty;
-        IDisposable bindHandler;
+        public Dictionary<string, DataBindPair> children = new Dictionary<string, DataBindPair>();
+        public BindDataSource source = new BindDataSource();
+
         Subject<object> onChange = new Subject<object>();
-        object staticValue;
 
-        public DataBindPair(string key)
+        public bool HasSource { get { return source.data != null; } }
+        public bool HasObservers { get { return onChange.HasObservers; } }
+        public bool IsBindingProperty { get { return source.IsBindingProperty; } }
+
+        public DataBindPair()
         {
-            this.key = key;
-        }
-
-        public void SetSource(object source)
-        {
-            if (source == null && !HasSource)
-                return;
-
-            if (bindHandler != null)
-                bindHandler.Dispose();
-
-            this.sourceBindingProperty = null;
-            staticValue = null;
-
-            if (source is IBindingProperty)
-                this.sourceBindingProperty = (IBindingProperty)source;
-            else
-                staticValue = source;
-
-            if (this.sourceBindingProperty != null)
-                bindHandler = this.sourceBindingProperty.Subscribe(onChange);
-
-            onChange.OnNext(GetValue());
+            source.owner = this;
         }
 
         public IDisposable Subscribe(IObserver<object> observer)
         {
+            
             var handle = onChange.Subscribe(observer);
             return handle;
         }
 
         public object GetValue()
         {
-            if (sourceBindingProperty != null)
-                return sourceBindingProperty.GetValue();
-            return staticValue;
+            return source.GetValue();
         }
 
-        public bool HasObservers()
+        public DataBindPair GetValue(string path)
         {
-            return onChange.HasObservers;
+            string[] splitResult = path.Split(DataBindingManager.split);
+            var result = GetValue(splitResult, 0);
+            return result;
         }
 
-        public bool HasSource { get { return sourceBindingProperty != null || staticValue != null; } }
-        public bool IsBindingValue { get { return sourceBindingProperty != null; } }
-    }
+        public DataBindPair GetValue(string[] pathList, int currentDepth = 0)
+        {
+            if (currentDepth == pathList.Length)
+                return this;
+
+            var name = pathList[currentDepth];            
+            return GetChild(name).GetValue(pathList, currentDepth + 1);
+        }
+
+        DataBindPair GetChild(string name)
+        {
+            if (!children.TryGetValue(name, out var result))
+            {
+                result = new DataBindPair();
+                children.Add(name, result);
+                result.SetSource(source.GetChildValue(name));
+            }
+            return result;
+        }
+
+        public void SetSource(object dataSource)
+        {
+            Dispose();
+
+            source.SetSource(dataSource);
+            onValueChange();
+        }
+
+        public void Dispose()
+        {
+            foreach (var child in children)
+                child.Value.Dispose();
+
+            source.SetSource(null);
+        }
+
+        private void UpdateUnbindData()
+        {
+            foreach (var child in children)
+            {
+                var name = child.Key;
+                var value = child.Value;
+                value.SetSource(source.GetChildValue(name));               
+            }
+        }
+
+        public void onValueChange()
+        {
+            foreach (var child in children)
+                child.Value.Dispose();
+
+            if(DataBindingManager.AutoExposeChildren)
+            {
+                var allAttributes = source.GetAllAttributeName();
+                foreach (var attr in allAttributes)
+                {
+                    if (children.ContainsKey(attr))
+                        continue;
+                    children.Add(attr, new DataBindPair());
+                }
+            }
+            
+            UpdateUnbindData();
+            onChange.OnNext(GetValue());
+        }
+    }    
 }

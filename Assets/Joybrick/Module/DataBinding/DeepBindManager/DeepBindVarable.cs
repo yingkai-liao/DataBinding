@@ -73,6 +73,15 @@ namespace Joybrick
             Update();
         }
 
+        public DataBindPair GetTargetDataBindPair()
+        {
+            if(parseResult == ParseResult.IsVariable)
+            {
+                return process.Last().target;
+            }
+            return null;
+        }
+
         void OnChange(object s)
         {
             Update();
@@ -127,7 +136,7 @@ namespace Joybrick
                 {
                     DeepBindMember newVariable = new DeepBindMember();
                     newVariable.request = _sbTemp.ToString();
-                    newVariable.target = bindingMgr.GetDataPair(newVariable.request);
+                    newVariable.target = bindingMgr.GetValue(newVariable.request);
                     newVariable.handle = newVariable.target.Subscribe(OnChange);
                     process.Add(newVariable);
 

@@ -38,9 +38,14 @@ namespace Joybrick
                 DataBindingView.OnCopy = (s) => { __target.requestText = "{" + s + "}"; };
             }
 
-            if (__target.basePath != null)
+            if (__target.variables != null)
             {
-                EditorGUILayout.LabelField("=> " + __target.requestText.Replace("$", __target.basePath.requestText));
+                var s = __target.requestText;
+
+                foreach (var item in __target.variables.variable)
+                    s = s.Replace($"{{$.{item.name}}}", item.value);
+
+                EditorGUILayout.LabelField("=> " + s);
             }
 
             if (EditorApplication.isPlaying && __target.deepBinder != null && __target.deepBinder.process != null)
